@@ -268,9 +268,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
     <script>
-        if (localStorage.getItem('admin_logged_in') !== 'true') window.location.href = 'login.html';
+        if (localStorage.getItem('admin_logged_in') !== 'true') window.location.href = '../index.html';
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
-            e.preventDefault(); localStorage.clear(); window.location.href = 'login.html';
+            e.preventDefault(); localStorage.clear(); window.location.href = '../index.html';
         });
 
         function showNotification(msg, type = 'success') {
@@ -623,3 +623,4 @@
     </script>
 </body>
 </html>
+

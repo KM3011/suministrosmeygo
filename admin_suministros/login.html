@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -103,7 +103,7 @@
                 <input type="text" id="username" required autocomplete="off">
             </div>
             <div class="form-group">
-                <label>ContraseÃ±a</label>
+                <label>Contraseña</label>
                 <input type="password" id="password" required>
             </div>
             <button type="submit" class="btn-admin" id="submitBtn">Acceso</button>
@@ -145,11 +145,11 @@
 
                 if (error || !data) {
                     errorMsg.style.display = 'block';
-                    errorMsg.innerText = 'Usuario o contraseÃ±a incorrectos.';
+                    errorMsg.innerText = 'Usuario o contraseña incorrectos.';
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Acceso';
                 } else {
-                    // Simular inicio de sesiÃ³n exitoso guardÃ¡ndolo en el navegador
+                    // Simular inicio de sesión exitoso guardándolo en el navegador
                     localStorage.setItem('admin_logged_in', 'true');
                     localStorage.setItem('admin_username', data.username);
                     window.location.href = 'index.html';
@@ -159,4 +159,5 @@
     </script>
 </body>
 </html>
+
 
