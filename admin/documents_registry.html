@@ -1,18 +1,27 @@
-﻿
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Documentos - Meygo ERP</title>
+    <link rel="icon" type="image/png" href="../assets/images/icon.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="css/admin.css">
-</head>
-<body class="">
-    <div class="sidebar">
+    <style>
+        #notificationArea { margin-bottom: 2rem; }
+        .alert { padding: 1rem; border-radius: 5px; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-error { background: #fee2e2; color: #991b1b; }
         
-        <img src="" alt="Meygo Logo" class="sidebar-logo">
+        .badge { padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .badge-pagado { background: #dcfce7; color: #16a34a; }
+        .badge-pendiente { background: #ffedd5; color: #ea580c; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
         <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
         <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
         <a href="documents_registry.html" class="nav-item active"><i class="ph ph-folders"></i> Documentos</a>
@@ -21,73 +30,113 @@
         <a href="clients.html" class="nav-item"><i class="ph ph-users"></i> Clientes</a>
         <a href="users.html" class="nav-item"><i class="ph ph-users-three"></i> Usuarios</a>
         <a href="settings.html" class="nav-item"><i class="ph ph-gear"></i> Ajustes</a>
-        <a href="logout.html" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
+        <a href="#" id="logoutBtn" class="nav-item" style="margin-top: auto; color: var(--danger);"><i class="ph ph-sign-out"></i> Salir</a>
     </div>
-    
+
     <div class="main-content page-fade-in">
         <div class="header stagger-1">
-            <h1>Registro HistÃ³rico de Documentos</h1>
+            <h1>Registro Historico de Documentos</h1>
         </div>
         
+        <div id="notificationArea" class="stagger-1"></div>
+
         <div class="card stagger-2">
             <h3>Facturas, Notas de Entrega y Presupuestos Emitidos</h3>
             <div class="table-responsive" style="margin-top: 1rem;">
                 <table>
                     <thead>
                         <tr>
-                            <th>NÂ° Control</th>
+                            <th>N Control</th>
                             <th>Tipo</th>
                             <th>Cliente</th>
-                            <th>Moneda</th>
-                            <th>Tasa BCV</th>
                             <th>Total (USD)</th>
-                            <th>Total (VES)</th>
                             <th>Estado</th>
                             <th>Emision</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        
-                        <tr>
-                            <td><strong></strong></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>Bs.</td>
-                            <td>$</td>
-                            <td>Bs.</td>
-                            <td>
-                                <span class="badge ">
-                                    
-                                </span>
-                            </td>
-                            <td></td>
-                            <td style="display: flex; gap: 5px;">
-                                <a href="reprint_document.html?id=" target="_blank" class="btn-sm" style="background: var(--accent);"><i class="ph ph-printer"></i></a>
-                                
-                                <form action="document_actions.html" method="POST" style="display:inline;">
-                                    <input type="hidden" name="action" value="unprocess">
-                                    <input type="hidden" name="doc_id" value="">
-                                    <button type="submit" class="btn-sm warning" title="Desprocesar (Volver Pendiente)" onclick="return confirm('Â¿Seguro que deseas deshacer el pago y retirar el ingreso de finanzas?');"><i class="ph ph-arrow-u-down-left"></i></button>
-                                </form>
-                                
-                                <form action="document_actions.html" method="POST" style="display:inline;">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="doc_id" value="">
-                                    <button type="submit" class="btn-sm" style="background: var(--danger);" title="Eliminar Documento" onclick="return confirm('Â¿Seguro que deseas eliminar este documento completamente del sistema?');"><i class="ph ph-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                        
-                        
-                            <tr><td colspan="9">No hay documentos registrados.</td></tr>
-                        
+                    <tbody id="documentsTableBody">
+                        <tr><td colspan="7">Cargando documentos...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
+
+    <script>
+        if (localStorage.getItem('admin_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('admin_logged_in');
+            localStorage.removeItem('admin_username');
+            window.location.href = 'login.html';
+        });
+
+        function showNotification(msg, type = 'success') {
+            const area = document.getElementById('notificationArea');
+            const icon = type === 'success' ? 'ph-check-circle' : 'ph-warning';
+            area.innerHTML = `<div class="alert alert-${type}"><i class="ph ${icon}"></i> ${msg}</div>`;
+            setTimeout(() => { area.innerHTML = ''; }, 4000);
+        }
+
+        async function fetchDocuments() {
+            const tbody = document.getElementById('documentsTableBody');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('documents')
+                    .select('*, clients(name)')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7">No hay documentos registrados.</td></tr>';
+                    return;
+                }
+
+                data.forEach(doc => {
+                    const tr = document.createElement('tr');
+                    const clientName = doc.clients ? doc.clients.name : 'Cliente Eliminado';
+                    const badgeClass = doc.status === 'Pagado' ? 'badge-pagado' : 'badge-pendiente';
+                    
+                    tr.innerHTML = `
+                        <td><strong>${doc.control_number}</strong></td>
+                        <td>${doc.type}</td>
+                        <td>${clientName}</td>
+                        <td>$${parseFloat(doc.total).toFixed(2)}</td>
+                        <td><span class="badge ${badgeClass}">${doc.status}</span></td>
+                        <td>${doc.date}</td>
+                        <td style="display: flex; gap: 5px;">
+                            <button onclick="deleteDocument(${doc.id}, '${doc.control_number}')" class="btn-sm" style="background: var(--danger);" title="Eliminar Documento"><i class="ph ph-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        async function deleteDocument(id, controlNum) {
+            if (!confirm(`Seguro que deseas eliminar el documento ${controlNum}? Se eliminara permanentemente.`)) return;
+            try {
+                const { error } = await supabaseClient.from('documents').delete().eq('id', id);
+                if (error) throw error;
+                
+                showNotification(`Documento ${controlNum} eliminado exitosamente.`);
+                fetchDocuments();
+            } catch (err) {
+                showNotification(err.message, 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchDocuments);
+    </script>
 </body>
 </html>
-
