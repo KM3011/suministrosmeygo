@@ -114,9 +114,13 @@
                         <td>$${parseFloat(doc.total).toFixed(2)}</td>
                         <td><span class="badge ${badgeClass}">${doc.status}</span></td>
                         <td>${doc.date}</td>
-                        <td style="display: flex; gap: 5px;">
-                            <button onclick="downloadDocument(${doc.id})" class="btn-sm" style="background: var(--primary);" title="Descargar PDF" id="btn-download-${doc.id}"><i class="ph ph-download-simple"></i></button>
-                            <button onclick="deleteDocument(${doc.id}, '${doc.control_number}')" class="btn-sm" style="background: var(--danger);" title="Eliminar Documento"><i class="ph ph-trash"></i></button>
+                        <td style="display: flex; gap: 8px;">
+                            <button onclick="downloadDocument(${doc.id})" class="btn-sm" style="background: #1e4b82; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px;" title="Descargar o Reimprimir PDF" id="btn-download-${doc.id}">
+                                <i class="ph ph-download-simple" style="font-size: 1.2rem;"></i> Descargar
+                            </button>
+                            <button onclick="deleteDocument(${doc.id}, '${doc.control_number}')" class="btn-sm" style="background: #dc2626; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Eliminar Documento">
+                                <i class="ph ph-trash" style="font-size: 1.2rem;"></i>
+                            </button>
                         </td>
                     `;
                     tbody.appendChild(tr);
