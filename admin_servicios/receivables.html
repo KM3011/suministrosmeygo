@@ -21,7 +21,7 @@
 </head>
 <body class="theme-servicios">
     <div class="sidebar">
-        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
+        <img src="../assets/images/logo-servicios.png" alt="Servicios Logo" class="sidebar-logo">
         <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
         <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
         <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
@@ -98,8 +98,8 @@
             const tbody = document.getElementById('cxcTableBody');
             try {
                 const { data, error } = await supabaseClient
-                    .from('documents')
-                    .select('*, clients(name)')
+                    .from('servicios_documents')
+                    .select('*, servicios_clients(name)')
                     .eq('status', 'Pendiente')
                     .order('date', { ascending: true });
                 
@@ -118,7 +118,7 @@
                     const tr = document.createElement('tr');
                     totalDeuda += parseFloat(doc.total);
                     
-                    const clientName = doc.clients ? doc.clients.name : 'Cliente Desconocido';
+                    const clientName = doc.servicios_clients ? doc.servicios_clients.name : 'Cliente Desconocido';
                     
                     tr.innerHTML = `
                         <td><strong>${doc.control_number}</strong></td>
@@ -153,7 +153,7 @@
             try {
                 // 1. Update Document Status
                 const { error: updateError } = await supabaseClient
-                    .from('documents')
+                    .from('servicios_documents')
                     .update({ status: 'Pagado' })
                     .eq('id', docId);
                 
@@ -170,7 +170,7 @@
                 };
                 
                 const { error: financeError } = await supabaseClient
-                    .from('finances')
+                    .from('servicios_finances')
                     .insert([financeRecord]);
                     
                 if (financeError) throw financeError;
@@ -186,3 +186,5 @@
     </script>
 </body>
 </html>
+
+

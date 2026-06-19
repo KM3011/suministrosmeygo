@@ -110,7 +110,7 @@
 </head>
 <body class="theme-servicios">
     <div class="sidebar">
-        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
+        <img src="../assets/images/logo-servicios.png" alt="Servicios Logo" class="sidebar-logo">
         <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
         <a href="create_document.html" class="nav-item active"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
         <a href="documents_registry.html" class="nav-item"><i class="ph ph-folders"></i> Documentos</a>
@@ -317,14 +317,14 @@
         async function loadInitialData() {
             try {
                 // 1. Settings
-                const { data: setD } = await supabaseClient.from('settings').select('*').limit(1);
+                const { data: setD } = await supabaseClient.from('servicios_settings').select('*').limit(1);
                 if (setD && setD.length > 0) {
                     settingsData = setD[0];
                     updateControlNumber('Presupuesto');
                 }
                 
                 // 2. Clients
-                const { data: cliD } = await supabaseClient.from('clients').select('*');
+                const { data: cliD } = await supabaseClient.from('servicios_clients').select('*');
                 if (cliD) {
                     clientsData = cliD;
                     renderClientsList();
@@ -581,7 +581,7 @@
                     created_by: localStorage.getItem('admin_username') || 'admin'
                 };
 
-                const { data: insertedDoc, error: docErr } = await supabaseClient.from('documents').insert([docPayload]).select();
+                const { data: insertedDoc, error: docErr } = await supabaseClient.from('servicios_documents').insert([docPayload]).select();
                 if (docErr) throw docErr;
                 
                 const newDocId = insertedDoc[0].id;
@@ -594,7 +594,7 @@
                     price: i.price,
                     total: i.quantity * i.price
                 }));
-                const { error: itemsErr } = await supabaseClient.from('document_items').insert(itemsPayload);
+                const { error: itemsErr } = await supabaseClient.from('servicios_document_items').insert(itemsPayload);
                 if (itemsErr) throw itemsErr;
 
                 // 3. Update Settings Counter
@@ -604,7 +604,7 @@
                     else if (docType === 'Factura') updateField.next_factura = (settingsData.next_factura || 1) + 1;
                     else updateField.next_nota = (settingsData.next_nota || 1) + 1;
 
-                    await supabaseClient.from('settings').update(updateField).eq('id', settingsData.id);
+                    await supabaseClient.from('servicios_settings').update(updateField).eq('id', settingsData.id);
                 }
 
                 // Generate PDF locally
@@ -623,3 +623,5 @@
     </script>
 </body>
 </html>
+
+

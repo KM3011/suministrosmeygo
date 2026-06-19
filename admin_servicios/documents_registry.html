@@ -21,7 +21,7 @@
 </head>
 <body class="theme-servicios">
     <div class="sidebar">
-        <img src="../assets/images/logo.png" alt="Meygo Logo" class="sidebar-logo">
+        <img src="../assets/images/logo-servicios.png" alt="Servicios Logo" class="sidebar-logo">
         <a href="index.html" class="nav-item"><i class="ph ph-squares-four"></i> Dashboard</a>
         <a href="create_document.html" class="nav-item"><i class="ph ph-file-plus"></i> Emitir Doc.</a>
         <a href="documents_registry.html" class="nav-item active"><i class="ph ph-folders"></i> Documentos</a>
@@ -90,8 +90,8 @@
             const tbody = document.getElementById('documentsTableBody');
             try {
                 const { data, error } = await supabaseClient
-                    .from('documents')
-                    .select('*, clients(name)')
+                    .from('servicios_documents')
+                    .select('*, servicios_clients(name)')
                     .order('created_at', { ascending: false });
                 
                 if (error) throw error;
@@ -104,7 +104,7 @@
 
                 data.forEach(doc => {
                     const tr = document.createElement('tr');
-                    const clientName = doc.clients ? doc.clients.name : 'Cliente Eliminado';
+                    const clientName = doc.servicios_clients ? doc.servicios_clients.name : 'Cliente Eliminado';
                     const badgeClass = doc.status === 'Pagado' ? 'badge-pagado' : 'badge-pendiente';
                     
                     tr.innerHTML = `
@@ -133,7 +133,7 @@
         async function deleteDocument(id, controlNum) {
             if (!confirm(`Seguro que deseas eliminar el documento ${controlNum}? Se eliminara permanentemente.`)) return;
             try {
-                const { error } = await supabaseClient.from('documents').delete().eq('id', id);
+                const { error } = await supabaseClient.from('servicios_documents').delete().eq('id', id);
                 if (error) throw error;
                 
                 showNotification(`Documento ${controlNum} eliminado exitosamente.`);
@@ -151,21 +151,21 @@
             try {
                 // 1. Fetch Document and Client
                 const { data: docData, error: docErr } = await supabaseClient
-                    .from('documents')
-                    .select('*, clients(*)')
+                    .from('servicios_documents')
+                    .select('*, servicios_clients(*)')
                     .eq('id', docId)
                     .single();
                 if (docErr) throw docErr;
 
                 // 2. Fetch Items
                 const { data: itemsData, error: itemsErr } = await supabaseClient
-                    .from('document_items')
+                    .from('servicios_document_items')
                     .select('*')
                     .eq('document_id', docId);
                 if (itemsErr) throw itemsErr;
 
                 // 3. Fetch Settings
-                const { data: settingsResult } = await supabaseClient.from('settings').select('*').limit(1);
+                const { data: settingsResult } = await supabaseClient.from('servicios_settings').select('*').limit(1);
                 const settingsData = settingsResult && settingsResult.length > 0 ? settingsResult[0] : null;
 
                 // 4. Fetch Rate
@@ -213,9 +213,9 @@
                 doc.text('DATOS DEL CLIENTE', 18, 52);
                 doc.setFontSize(10);
                 doc.setTextColor(0, 0, 0);
-                doc.text(`Nombre: ${docData.clients ? docData.clients.name : 'N/A'}`, 18, 60);
-                doc.text(`RIF/Cedula: ${docData.clients ? docData.clients.rif : 'N/A'}`, 18, 65);
-                doc.text(`Direccion: ${docData.clients && docData.clients.address ? docData.clients.address.substring(0, 80) : 'N/A'}`, 18, 70);
+                doc.text(`Nombre: ${docData.servicios_clients ? docData.servicios_clients.name : 'N/A'}`, 18, 60);
+                doc.text(`RIF/Cedula: ${docData.servicios_clients ? docData.servicios_clients.rif : 'N/A'}`, 18, 65);
+                doc.text(`Direccion: ${docData.servicios_clients && docData.servicios_clients.address ? docData.servicios_clients.address.substring(0, 80) : 'N/A'}`, 18, 70);
 
                 // Items Table
                 const tableBody = itemsData.map(item => [
@@ -270,3 +270,5 @@
     </script>
 </body>
 </html>
+
+
