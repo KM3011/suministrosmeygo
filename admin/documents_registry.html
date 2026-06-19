@@ -65,6 +65,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabaseClient.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
     <script>
         if (localStorage.getItem('admin_logged_in') !== 'true') {
@@ -113,6 +115,7 @@
                         <td><span class="badge ${badgeClass}">${doc.status}</span></td>
                         <td>${doc.date}</td>
                         <td style="display: flex; gap: 5px;">
+                            <button onclick="downloadDocument(${doc.id})" class="btn-sm" style="background: var(--primary);" title="Descargar PDF" id="btn-download-${doc.id}"><i class="ph ph-download-simple"></i></button>
                             <button onclick="deleteDocument(${doc.id}, '${doc.control_number}')" class="btn-sm" style="background: var(--danger);" title="Eliminar Documento"><i class="ph ph-trash"></i></button>
                         </td>
                     `;
@@ -133,6 +136,129 @@
                 fetchDocuments();
             } catch (err) {
                 showNotification(err.message, 'error');
+            }
+        }
+
+        async function downloadDocument(docId) {
+            const btn = document.getElementById(`btn-download-${docId}`);
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i>';
+
+            try {
+                // 1. Fetch Document and Client
+                const { data: docData, error: docErr } = await supabaseClient
+                    .from('documents')
+                    .select('*, clients(*)')
+                    .eq('id', docId)
+                    .single();
+                if (docErr) throw docErr;
+
+                // 2. Fetch Items
+                const { data: itemsData, error: itemsErr } = await supabaseClient
+                    .from('document_items')
+                    .select('*')
+                    .eq('document_id', docId);
+                if (itemsErr) throw itemsErr;
+
+                // 3. Fetch Settings
+                const { data: settingsResult } = await supabaseClient.from('settings').select('*').limit(1);
+                const settingsData = settingsResult && settingsResult.length > 0 ? settingsResult[0] : null;
+
+                // 4. Fetch Rate
+                let currentRate = 1;
+                try {
+                    const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+                    const data = await res.json();
+                    currentRate = data.promedio;
+                } catch(e) { console.error(e); }
+
+                // 5. Generate PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.setTextColor(30, 75, 130);
+                doc.text(settingsData ? (settingsData.company_name || 'MEYGO ERP') : 'MEYGO ERP', 14, 22);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                if(settingsData) {
+                    doc.text(`RIF: ${settingsData.rif || ''}`, 14, 30);
+                    doc.text(`Direccion: ${settingsData.address || ''}`, 14, 35);
+                    doc.text(`Telefono: ${settingsData.phone || ''}`, 14, 40);
+                }
+
+                // Doc Info
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`${docData.type.toUpperCase()}`, 150, 22);
+                doc.setFontSize(10);
+                doc.text(`N Control: ${docData.control_number}`, 150, 30);
+                
+                // Date formatting
+                const docDate = new Date(docData.date);
+                docDate.setMinutes(docDate.getMinutes() + docDate.getTimezoneOffset());
+                doc.text(`Fecha: ${docDate.toLocaleDateString()}`, 150, 35);
+
+                // Client Info
+                doc.setFillColor(240, 245, 250);
+                doc.rect(14, 45, 182, 35, 'F');
+                doc.setFontSize(11);
+                doc.setTextColor(30, 75, 130);
+                doc.text('DATOS DEL CLIENTE', 18, 52);
+                doc.setFontSize(10);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Nombre: ${docData.clients ? docData.clients.name : 'N/A'}`, 18, 60);
+                doc.text(`RIF/Cedula: ${docData.clients ? docData.clients.rif : 'N/A'}`, 18, 65);
+                doc.text(`Direccion: ${docData.clients && docData.clients.address ? docData.clients.address.substring(0, 80) : 'N/A'}`, 18, 70);
+
+                // Items Table
+                const tableBody = itemsData.map(item => [
+                    item.description,
+                    item.quantity,
+                    '$' + parseFloat(item.price).toFixed(2),
+                    '$' + parseFloat(item.total).toFixed(2)
+                ]);
+
+                doc.autoTable({
+                    startY: 85,
+                    head: [['Descripcion', 'Cant.', 'Precio Unit.', 'Total']],
+                    body: tableBody,
+                    theme: 'striped',
+                    headStyles: { fillColor: [30, 75, 130] },
+                    styles: { fontSize: 9 }
+                });
+
+                // Totals
+                const finalY = doc.lastAutoTable.finalY + 10;
+                doc.setFontSize(10);
+                doc.text(`Subtotal: $${parseFloat(docData.subtotal).toFixed(2)}`, 140, finalY);
+                doc.text(`IVA: $${parseFloat(docData.tax).toFixed(2)}`, 140, finalY + 6);
+                doc.setFontSize(12);
+                doc.setTextColor(30, 75, 130);
+                doc.text(`TOTAL USD: $${parseFloat(docData.total).toFixed(2)}`, 140, finalY + 14);
+                
+                const totalVES = docData.total * currentRate;
+                doc.setTextColor(76, 175, 80);
+                doc.text(`TOTAL VES: Bs. ${totalVES.toFixed(2)}`, 140, finalY + 20);
+
+                // Payment Info
+                if (settingsData && settingsData.payment_info) {
+                    doc.setFontSize(9);
+                    doc.setTextColor(100, 100, 100);
+                    const splitText = doc.splitTextToSize(settingsData.payment_info, 180);
+                    doc.text(splitText, 14, finalY + 35);
+                }
+
+                doc.save(`${docData.type}_${docData.control_number}.pdf`);
+                showNotification(`Documento ${docData.control_number} descargado.`);
+
+            } catch (err) {
+                showNotification(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-download-simple"></i>';
             }
         }
 
