@@ -2,7 +2,7 @@
   "name": "Suministros Meygo",
   "short_name": "Suministros",
   "description": "Suministros Meygo C.A. - Catálogo",
-  "start_url": "./suministros.php",
+  "start_url": "./suministros.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1e4b82",
