@@ -1,0 +1,17 @@
+{
+  "name": "Portal Meygo",
+  "short_name": "Meygo",
+  "description": "Portal de Empresas Meygo C.A.",
+  "start_url": "./index.php",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "assets/images/icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

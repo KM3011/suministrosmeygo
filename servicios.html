@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios Meygo C.A. | Estilo Cuaderno</title>
+    <link rel="icon" type="image/png" href="assets/images/icon.png">
+    <meta name="description" content="Servicios Meygo C.A. Empresa de servicios industriales y residenciales en obras civiles, navales, trabajos eléctricos, refrigeración y más.">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest-servicios.json">
+    <meta name="theme-color" content="#e65100">
+    <link rel="apple-touch-icon" href="assets/images/icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="theme-servicios">
+
+    <!-- App-like Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-logo">
+            <img src="assets/images/logo-servicios.png" alt="Meygo Logo">
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <img src="assets/images/logo-servicios.png" alt="Meygo Logo" class="logo-img">
+        </div>
+        <ul class="nav-links">
+            <li><button class="nav-btn active" data-index="0">Inicio</button></li>
+            <li><button class="nav-btn" data-index="1">Nosotros</button></li>
+            <li><button class="nav-btn" data-index="2">Servicios</button></li>
+            <li><button class="nav-btn" data-index="3">Experiencia</button></li>
+            <li><a href="suministros.html" class="nav-btn" style="text-decoration:none; color:var(--accent); display:flex; align-items:center; gap:5px;"><i class="ph ph-buildings"></i> Ir a Suministros</a></li>
+        </ul>
+        <a href="admin/login.html?empresa=servicios" class="btn-admin">Acceso</a>
+    </nav>
+
+    <!-- Page Controls (Notebook style) -->
+    <button id="page-prev" class="page-control left"><i class="ph ph-caret-left"></i></button>
+    <button id="page-next" class="page-control right"><i class="ph ph-caret-right"></i></button>
+
+    <!-- Notebook Layout Container -->
+    <div class="notebook-window">
+        <div class="notebook-track" id="notebook-track">
+
+            <!-- PAGE 1: Inicio -->
+            <section class="page-section" id="inicio">
+                <canvas id="particles-canvas"></canvas> <!-- Animated Background -->
+                <div class="hero-content reveal active">
+                    <h1>Excelencia en <span>Servicios.</span></h1>
+                    <p>Especialistas en obras civiles, navales, y mantenimiento industrial. Soluciones integrales para la industria y el hogar con los más altos estándares de calidad.</p>
+                    <button class="btn-primary" onclick="goToPage(2)">
+                        Ver Servicios <i class="ph ph-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PAGE 2: Nosotros -->
+            <section class="page-section" id="nosotros">
+                <ul class="bg-bubbles">
+                    <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+                </ul>
+                <div class="section-content" style="position: relative; z-index: 1;">
+                    <div class="section-header reveal active">
+                        <h2>Nuestra <span>Misión y Visión</span></h2>
+                        <p>Comprometidos con el desarrollo intelectual de nuestros trabajadores en armonía con la higiene y seguridad.</p>
+                    </div>
+                    <div class="services-grid">
+                        <div class="service-card reveal active">
+                            <i class="ph ph-target service-icon"></i>
+                            <h3>Misión</h3>
+                            <p>Enfocada en la satisfacción de nuestros clientes basada en la entrega oportuna, fiable y técnicamente adaptada a las normas vigentes de ingeniería.</p>
+                        </div>
+                        <div class="service-card reveal active" style="transition-delay: 0.1s;">
+                            <i class="ph ph-eye service-icon"></i>
+                            <h3>Visión</h3>
+                            <p>La perfecta ejecución de cada uno de nuestros proyectos, desarrollando un aprendizaje continuo basado en altos estándares de calidad y compromiso.</p>
+                        </div>
+                        <div class="service-card reveal active" style="transition-delay: 0.2s;">
+                            <i class="ph ph-medal service-icon"></i>
+                            <h3>Capacidad</h3>
+                            <p>Capacitados para ejecutar proyectos de ingeniería, construcciones y montajes industriales. Ofreciendo excelente relación precio-valor.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 3: Servicios -->
+            <section class="page-section" id="servicios">
+                <div class="bg-waves-container">
+                    <div class="bg-wave"></div>
+                    <div class="bg-wave"></div>
+                </div>
+                <div class="section-content" id="services-main-view" style="position: relative; z-index: 1;">
+                    <div class="section-header reveal active">
+                        <h2>Nuestros <span>Servicios</span></h2>
+                        <p>Selecciona un servicio para explorar los trabajos realizados y solicitar cotización.</p>
+                    </div>
+                    <div class="services-grid">
+                        <div class="service-card interactive-card reveal active" data-service="Obras Civiles y Navales" data-folder="obras-civiles">
+                            <i class="ph ph-hard-hat service-icon"></i>
+                            <h3>Obras Civiles y Navales</h3>
+                            <p>Construcción, remodelación y mantenimiento especializado.</p>
+                        </div>
+                        <div class="service-card interactive-card reveal active" data-service="Trabajos Eléctricos" data-folder="trabajos-electricos">
+                            <i class="ph ph-lightning service-icon"></i>
+                            <h3>Trabajos Eléctricos</h3>
+                            <p>Electricidad en media y alta tensión, generadores y motores.</p>
+                        </div>
+                        <div class="service-card interactive-card reveal active" data-service="Refrigeración" data-folder="refrigeracion">
+                            <i class="ph ph-snowflake service-icon"></i>
+                            <h3>Refrigeración</h3>
+                            <p>Sistemas industriales y residenciales, mantenimiento de ductos.</p>
+                        </div>
+                        <div class="service-card interactive-card reveal active" data-service="Bombeo y Termofusión" data-folder="bombeo">
+                            <i class="ph ph-drop service-icon"></i>
+                            <h3>Bombeo y Termofusión</h3>
+                            <p>Reparación de sistemas de bombas e instalación de filtros.</p>
+                        </div>
+                        <div class="service-card interactive-card reveal active" data-service="Equipos Contra Incendios" data-folder="incendios">
+                            <i class="ph ph-fire-extinguisher service-icon"></i>
+                            <h3>Equipos Contra Incendios</h3>
+                            <p>Mangueras, trajes, recarga de extintores y lámparas.</p>
+                        </div>
+                        <div class="service-card interactive-card reveal active" data-service="Limpieza y Fumigación" data-folder="limpieza">
+                            <i class="ph ph-broom service-icon"></i>
+                            <h3>Limpieza y Fumigación</h3>
+                            <p>Mantenimiento de piscinas, fumigación y pulitura de pisos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Gallery View (Hidden by default) -->
+                <div class="section-content" id="services-gallery-view" style="display: none; position: relative; z-index: 1;">
+                    <button class="btn-back" id="btn-back-services"><i class="ph ph-arrow-left"></i> Volver a Servicios</button>
+                    <div class="section-header">
+                        <h2>Trabajos de <span id="gallery-service-title">Servicio</span></h2>
+                    </div>
+                    
+                    <div class="gallery-grid" id="inline-gallery-grid">
+                        <!-- Images injected via JS -->
+                    </div>
+
+                    <div style="text-align: center; margin-top: 3rem;">
+                        <button class="btn-primary" id="btn-quote-service">
+                            <i class="ph ph-clipboard-text"></i> Cotizar este servicio
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE 4: Experiencia -->
+            <section class="page-section" id="experiencia">
+                <div class="bg-gradient-flow"></div>
+                <div class="section-content" style="position: relative; z-index: 1;">
+                    <div class="section-header reveal active">
+                        <h2>Experiencia <span>Comprobada</span></h2>
+                        <p>Proyectos de alto nivel ejecutados con excelencia en todo el país.</p>
+                    </div>
+                    <div class="carousel-container reveal active">
+                        <div class="carousel-track">
+                            <div class="carousel-slide"><img src="assets/images/obras-civiles/1.png" alt="Trabajo Industrial"></div>
+                            <div class="carousel-slide"><img src="assets/images/trabajos-electricos/1.png" alt="Trabajo Eléctrico"></div>
+                            <div class="carousel-slide"><img src="assets/images/refrigeracion/1.png" alt="Refrigeración Industrial"></div>
+                        </div>
+                        <button class="carousel-btn prev-btn"><i class="ph ph-caret-left"></i></button>
+                        <button class="carousel-btn next-btn"><i class="ph ph-caret-right"></i></button>
+                    </div>
+                </div>
+                <footer style="position: absolute; bottom: 0; width: 100%; border: none;">
+                    <p>&copy; 2026 Servicios Meygo C.A. - RIF: J-410220430.</p>
+                </footer>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Floating Quote Button & 2-Step Form -->
+    <button id="floating-btn" class="floating-btn">
+        <i class="ph ph-chat-teardrop-text"></i>
+    </button>
+
+    <div id="quote-modal" class="quote-modal">
+        <div class="quote-modal-content">
+            <span class="close-modal">&times;</span>
+            
+            <!-- Step 1 -->
+            <div id="quote-step-1">
+                <h3>Solicitar Cotización</h3>
+                <form id="quote-form">
+                    <input type="text" id="q_name" placeholder="Tu Nombre o Empresa" required>
+                    <input type="text" id="q_rif" placeholder="Cédula o RIF Personal" required>
+                    <input type="text" id="q_phone" placeholder="Teléfono" required>
+                    <input type="email" id="q_email" placeholder="Correo Electrónico" required>
+                    <textarea id="q_details" placeholder="Describe tu requerimiento (Ej: Servicio Eléctrico)..." rows="3" required></textarea>
+                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.8rem;">Continuar <i class="ph ph-arrow-right"></i></button>
+                </form>
+            </div>
+            
+            <!-- Step 2 -->
+            <div id="quote-step-2" style="display: none; text-align: center;">
+                <h3>¿Cómo deseas enviarlo?</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">Tus datos están listos. Elige un canal para enviar tu solicitud.</p>
+                <div class="contact-options-sm">
+                    <button id="send-whatsapp" class="contact-btn-sm whatsapp-btn">
+                        <i class="ph ph-whatsapp-logo"></i> WhatsApp
+                    </button>
+                    <button id="send-email" class="contact-btn-sm email-btn">
+                        <i class="ph ph-envelope-simple"></i> Correo
+                    </button>
+                </div>
+                <button id="back-step-1" style="background: none; border: none; color: var(--text-muted); margin-top: 1rem; cursor: pointer; text-decoration: underline;">Volver</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script>
+        const serviceGalleries = {
+            "obras-civiles": [
+                "assets/images/obras-civiles/1.jpg",
+                "assets/images/obras-civiles/2.jpg",
+                "assets/images/obras-civiles/3.jpg"
+            ],
+            "trabajos-electricos": [
+                "assets/images/trabajos-electricos/1.png"
+            ],
+            "refrigeracion": [
+                "assets/images/refrigeracion/1.png"
+            ],
+            "bombeo": [
+                "assets/images/bombeo/1.png"
+            ],
+            "incendios": [
+                "assets/images/incendios/1.png"
+            ],
+            "limpieza": [
+                "assets/images/limpieza/1.png"
+            ]
+        };
+    </script>
+    <script src="js/main.js"></script>
+</body>
+</html>
